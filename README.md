@@ -49,30 +49,35 @@ GET  /v1/clusters/live     # Real-time cluster classification
 GET  /v1/teams/{id}/stats  # Team performance by cluster type
 POST /v1/webhooks          # Real-time notifications
 
-Target Use Cases
+## Target Use Cases
+
 Sports Betting: Real-time odds optimization and risk management
 Fantasy Football: Match difficulty ratings and player recommendations
 Sports Media: Automated match previews and tactical insights
 Football Clubs: Opposition analysis and tactical pattern recognition
-Research Insights
+
+## Research Insights
 Match Archetypes Discovered
 High Intensity Physical - Many fouls/cards, tactical battles
 Goal Fest - High shots, entertainment value
 Defensive Grind - Low-scoring, strategic matches
 Balanced Tactical - Even contests, moderate scoring
 Chaotic Unpredictable - Extreme statistical variations
-Key Technical Findings
+
+## Key Technical Findings
 Clustering adds genuine predictive value beyond traditional statistics
 DBSCAN confirms football's "beautiful uncertainty" - most matches are unique
 K-means reveals hidden tactical patterns despite surface randomness
 Feature importance validates cluster contribution to goal prediction
-Technologies Used
-Python 3.x - Core development
+
+## Technologies Used
+Python 3 - Core development
 Scikit-learn - Machine learning algorithms
 Pandas & NumPy - Data manipulation
 Matplotlib & Seaborn - Visualization
 SciPy - Statistical analysis
-Methodology
+
+## Methodology
 Data Processing
 Missing value imputation using median strategy
 Feature standardization and engineering
@@ -81,7 +86,8 @@ Clustering Analysis
 K-means: Elbow method and silhouette optimization
 Hierarchical: Ward linkage with dendrogram visualization
 DBSCAN: Density-based outlier detection
-Model Validation
+
+## Model Validation
 Random Forest regression for goal prediction
 Permutation importance testing
 Cross-validation with proper train/test splits
@@ -96,7 +102,8 @@ Novel clustering approach to match analysis
 Proven 287% accuracy improvement
 Balance of predictability and uncertainty preservation
 20+ years of comprehensive data foundation
-Next Steps
+
+## Next Steps
 Immediate Development (Next 3 Months)
 API Framework Setup - FastAPI implementation with core endpoints
 Live Data Integration - Real-time match statistics pipeline
