@@ -16,19 +16,19 @@ bash
 pip install -r requirements.txt
 
 ### 2. **Project Structure**
-```markdown
-## Project Structure
-
-
-├── data/
-│ └── England.csv # Premier League match data
-├── src/
-│ ├── data_loader.py # Data loading & preprocessing
-│ ├── clustering.py # K-Means clustering logic
-│ └── models.py # Random Forest models
-├── config.py # Configuration parameters
-├── main.py # Main execution script
-└── requirements.txt # Dependencies
+   ```markdown
+   ## Project Structure
+   
+   
+   ├── data/
+   │ └── England.csv # Premier League match data
+   ├── src/
+   │ ├── data_loader.py # Data loading & preprocessing
+   │ ├── clustering.py # K-Means clustering logic
+   │ └── models.py # Random Forest models
+   ├── config.py # Configuration parameters
+   ├── main.py # Main execution script
+   └── requirements.txt # Dependencies
 
 
 ## Results
