@@ -65,48 +65,27 @@ python EnglishPremierLeague_GoalRateAnalysis.py
 
 
 Requirements
+
 apache
+
 pandas>=1.3.0
+
 numpy>=1.21.0
+
 scikit-learn>=0.24.0
+
 matplotlib>=3.4.0
+
 seaborn>=0.11.0
+
 scipy>=1.7.0
+
 gdown>=4.0.0
 
-Business Applications
-Where clustering adds value:
-
-Fantasy Football: Identify "high chaos" match archetypes for player volatility prediction
-Match Analytics: Tactical pattern recognition (e.g., "Defensive Grind" matches rarely reach 3+ goals)
-Betting: Small edge in over/under markets through cluster-based goal probability
-Where it doesn't:
-
-Real-time match outcome prediction (R² 0.383 is below professional betting thresholds)
-Handicapping individual player performance
-Research Insights
-Match Archetypes Identified
-High-Intensity Physical: Many fouls/cards, tactical battles (e.g., derby matches)
-Goal Fest: High shots on target, entertaining matches
-Defensive Grind: Low-scoring, strategic/cautious play
-Balanced Tactical: Even contests, moderate intensity
-Chaotic Unpredictable: High statistical variance (DBSCAN outliers)
-Why Football Remains Unpredictable
-Clustering explains ~38% of goal variance; the other 62% depends on individual skill, form, injuries, referee decisions, luck
-This aligns with sports analytics consensus: match outcomes are inherently noisy
-Next Steps for Improvement
-Fix code issues: Resolve variable naming inconsistencies, add proper error handling
-Leakage-safe validation: Recompute clusters using only base statistics (exclude target variables)
-Time-series validation: Test on held-out seasons rather than random train/test split
-Expand scope: Test on other leagues (La Liga, Bundesliga) to validate archetype generalization
-Ablation study: Quantify importance of each clustering algorithm (K-Means vs. Hierarchical)
-Author Notes
-This project started as coursework for a machine learning module. The analysis reveals genuine patterns in football match data, but also highlights the inherent unpredictability of the sport. The modest R² and DBSCAN failure are honest reflections of real-world constraints, not bugs to hide.
-
-The value here is methodological: demonstrating how to properly apply clustering to sports data, validate results, and acknowledge limitations.
-
 License
+
 MIT
 
 Questions / Feedback
+
 Open an issue on GitHub or reach out directly.
