@@ -317,18 +317,6 @@ DBSCAN_EPS = 1.2
 DBSCAN_MIN_SAMPLES = 10
 RANDOM_STATE = 42
 
-import numpy as np
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.impute import SimpleImputer
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-from sklearn.decomposition import PCA
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 # ============================================================
 # CLUSTERING RUN 1: PURE (no target leakage)
 # ============================================================
