@@ -61,7 +61,7 @@ git clone https://github.com/charleschtsoi/premier-league-clustering
 cd premier-league-clustering
 pip install -r requirements.txt
 python EnglishPremierLeague_GoalRateAnalysis.py
-```bash
+```
 
 
 Requirements
