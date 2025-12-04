@@ -16,8 +16,6 @@ bash
 pip install -r requirements.txt
 
 
-### **Project Structure**
-```markdown
 ## Project Structure
 
 
