@@ -16,9 +16,6 @@ bash
 pip install -r requirements.txt
 
 ### 2. **Project Structure**
-         ```markdown
-         ## Project Structure
-         
          
          ├── data/
          │ └── England.csv # Premier League match data
