@@ -470,28 +470,6 @@ print("\n[Engineered Model] Feature importances:")
 imp_eng = pd.Series(rf_eng_model.feature_importances_, index=rf_feats_eng).sort_values(ascending=False)
 print(imp_eng.round(4))
 
-import numpy as np
-import pandas as pd
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-
-from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
-from sklearn.metrics import silhouette_score
-from sklearn.decomposition import PCA
-from sklearn.neighbors import NearestNeighbors
-
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-from IPython.display import display
-
-sns.set(style='whitegrid', rc={"axes.spines.right": False, "axes.spines.top": False})
 
 # -----------------------
 # 0) Safety
