@@ -41,10 +41,15 @@ This research explores whether unsupervised clustering can reveal hidden match a
 
 
 premier-league-clustering/
+
 ├── EnglishPremierLeague_GoalRateAnalysis.py # Main analysis (needs refactoring)
+
 ├── README.md # This file
+
 ├── requirements.txt # Dependencies
+
 └── data/
+
 └── england.csv # Premier League match data
 
 basic
