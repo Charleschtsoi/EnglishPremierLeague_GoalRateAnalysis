@@ -308,20 +308,179 @@ Leveraging Clustering Methods to Enhance Predictive Accuracy and Strategic Decis
 """
 
 #-------- Config knobs  -------
-# Features I'm using for clustering - mostly match statistics
 features = ['H Shots','A Shots','H SOT','A SOT','H Fouls','A Fouls',
       'H Yellow','A Yellow','H Red','A Red','H Corners','A Corners']
 
-# Try different k values to find best clusters
-# engineered totals below are optional (toggle INCLUDE_ENGINEERED plz)
+K_RANGE = range(2, 11)
+PCA_COMPONENTS = 2
+DBSCAN_EPS = 1.2
+DBSCAN_MIN_SAMPLES = 10
+RANDOM_STATE = 42
 
-INCLUDE_ENGINEERED = True  # include FT_total_goals, HT_total_goals, SHT_total_goals in clustering
-K_RANGE = range(2, 11)     # candidate k for KMeans elbow/silhouette
-PCA_COMPONENTS = 2         # 2D plot for visualization
-DBSCAN_EPS = 1.2            # had to tune this - started with 0.5 but got too many outliers
-DBSCAN_MIN_SAMPLES = 10    # typical range: 5–15
-RANDOM_STATE = 42          # reproducibility for KMeans, PCA, RF
-# ------------------------------------------------
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# ============================================================
+# CLUSTERING RUN 1: PURE (no target leakage)
+# ============================================================
+print("\n[RUN 1] Computing PURE clusters (base statistics only)...\n")
+
+# Use only base features (no goals)
+cluster_features_pure = features.copy()
+
+X_pure_raw = engpremier_filter[cluster_features_pure].apply(pd.to_numeric, errors='coerce')
+
+imputer = SimpleImputer(strategy='median')
+scaler = StandardScaler()
+
+X_pure_filled = imputer.fit_transform(X_pure_raw)
+X_pure_scaled = scaler.fit_transform(X_pure_filled)
+
+print(f"[Pure] Clustering data: {X_pure_scaled.shape[0]} rows x {X_pure_scaled.shape[1]} features")
+
+# Find best k using silhouette
+inertias_pure = []
+sil_scores_pure = []
+for k in K_RANGE:
+    kmeans_temp = KMeans(n_clusters=k, random_state=RANDOM_STATE)
+    kmeans_temp.fit(X_pure_scaled)
+    inertias_pure.append(kmeans_temp.inertia_)
+    sil_score = silhouette_score(X_pure_scaled, kmeans_temp.labels_)
+    sil_scores_pure.append(sil_score)
+    print(f"  k={k}: silhouette = {sil_score:.3f}")
+
+best_k_pure = list(K_RANGE)[int(np.argmax(sil_scores_pure))]
+print(f"\n[Pure] Best k by silhouette: {best_k_pure}")
+
+kmeans_pure = KMeans(n_clusters=best_k_pure, random_state=RANDOM_STATE, n_init=10)
+engpremier_filter['cluster_km_pure'] = kmeans_pure.fit_predict(X_pure_scaled)
+print(f"[Pure] Silhouette score: {silhouette_score(X_pure_scaled, engpremier_filter['cluster_km_pure']):.3f}")
+
+# Visualize
+pca_pure = PCA(n_components=2, random_state=RANDOM_STATE)
+X_2d_pure = pca_pure.fit_transform(X_pure_scaled)
+
+plt.figure(figsize=(6,5))
+sns.scatterplot(x=X_2d_pure[:,0], y=X_2d_pure[:,1], hue=engpremier_filter['cluster_km_pure'], palette='tab10', s=35, alpha=0.85)
+plt.title('K-Means Pure Clusters (PCA 2D)')
+plt.xlabel('PC1')
+plt.ylabel('PC2')
+plt.legend(title='cluster', bbox_to_anchor=(1.02, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
+
+# ============================================================
+# CLUSTERING RUN 2: ENGINEERED (with goal variables - for comparison)
+# ============================================================
+print("\n[RUN 2] Computing ENGINEERED clusters (includes goal variables)...\n")
+
+cluster_features_eng = features + ['FT_total_goals','HT_total_goals','SHT_total_goals']
+
+X_eng_raw = engpremier_filter[cluster_features_eng].apply(pd.to_numeric, errors='coerce')
+
+imputer_eng = SimpleImputer(strategy='median')
+scaler_eng = StandardScaler()
+
+X_eng_filled = imputer_eng.fit_transform(X_eng_raw)
+X_eng_scaled = scaler_eng.fit_transform(X_eng_filled)
+
+print(f"[Engineered] Clustering data: {X_eng_scaled.shape[0]} rows x {X_eng_scaled.shape[1]} features")
+
+# Find best k
+inertias_eng = []
+sil_scores_eng = []
+for k in K_RANGE:
+    kmeans_temp = KMeans(n_clusters=k, random_state=RANDOM_STATE)
+    kmeans_temp.fit(X_eng_scaled)
+    inertias_eng.append(kmeans_temp.inertia_)
+    sil_score = silhouette_score(X_eng_scaled, kmeans_temp.labels_)
+    sil_scores_eng.append(sil_score)
+    print(f"  k={k}: silhouette = {sil_score:.3f}")
+
+best_k_eng = list(K_RANGE)[int(np.argmax(sil_scores_eng))]
+print(f"\n[Engineered] Best k by silhouette: {best_k_eng}")
+
+kmeans_eng = KMeans(n_clusters=best_k_eng, random_state=RANDOM_STATE, n_init=10)
+engpremier_filter['cluster_km_engineered'] = kmeans_eng.fit_predict(X_eng_scaled)
+print(f"[Engineered] Silhouette score: {silhouette_score(X_eng_scaled, engpremier_filter['cluster_km_engineered']):.3f}")
+
+# Visualize
+pca_eng = PCA(n_components=2, random_state=RANDOM_STATE)
+X_2d_eng = pca_eng.fit_transform(X_eng_scaled)
+
+plt.figure(figsize=(6,5))
+sns.scatterplot(x=X_2d_eng[:,0], y=X_2d_eng[:,1], hue=engpremier_filter['cluster_km_engineered'], palette='tab10', s=35, alpha=0.85)
+plt.title('K-Means Engineered Clusters (PCA 2D)')
+plt.xlabel('PC1')
+plt.ylabel('PC2')
+plt.legend(title='cluster', bbox_to_anchor=(1.02, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
+
+# ============================================================
+# MODEL COMPARISON: Pure vs Engineered
+# ============================================================
+print("\n[COMPARISON] Training models with each clustering approach...\n")
+
+# Define base features for modeling
+base_feats = [
+    'H Shots','A Shots','H SOT','A SOT',
+    'H Fouls','A Fouls','H Yellow','A Yellow',
+    'H Red','A Red','H Corners','A Corners'
+]
+
+y_model = engpremier_filter['FT_total_goals'].copy()
+
+# Model 1: Pure clusters
+rf_feats_pure = base_feats + ['cluster_km_pure']
+X_pure_model = engpremier_filter[rf_feats_pure].dropna()
+y_pure_model = engpremier_filter.loc[X_pure_model.index, 'FT_total_goals']
+
+X_train_p, X_test_p, y_train_p, y_test_p = train_test_split(X_pure_model, y_pure_model, test_size=0.2, random_state=RANDOM_STATE)
+
+rf_pure_model = RandomForestRegressor(n_estimators=400, random_state=RANDOM_STATE, n_jobs=-1)
+rf_pure_model.fit(X_train_p, y_train_p)
+r2_pure = rf_pure_model.score(X_test_p, y_test_p)
+
+print(f"Model 1 - R² with PURE clusters:       {r2_pure:.4f}")
+
+# Model 2: Engineered clusters
+rf_feats_eng = base_feats + ['cluster_km_engineered']
+X_eng_model = engpremier_filter[rf_feats_eng].dropna()
+y_eng_model = engpremier_filter.loc[X_eng_model.index, 'FT_total_goals']
+
+X_train_e, X_test_e, y_train_e, y_test_e = train_test_split(X_eng_model, y_eng_model, test_size=0.2, random_state=RANDOM_STATE)
+
+rf_eng_model = RandomForestRegressor(n_estimators=400, random_state=RANDOM_STATE, n_jobs=-1)
+rf_eng_model.fit(X_train_e, y_train_e)
+r2_eng = rf_eng_model.score(X_test_e, y_test_e)
+
+print(f"Model 2 - R² with ENGINEERED clusters: {r2_eng:.4f}")
+print(f"\nLeakage effect (difference): {r2_eng - r2_pure:+.4f}")
+
+if abs(r2_eng - r2_pure) < 0.05:
+    print("✓ Small difference = genuine clustering signal, not leakage")
+else:
+    print("✗ Large difference = significant leakage detected")
+    print("   → Use PURE clusters for honest model evaluation")
+
+# Feature importance comparison
+print("\n[Pure Model] Feature importances:")
+imp_pure = pd.Series(rf_pure_model.feature_importances_, index=rf_feats_pure).sort_values(ascending=False)
+print(imp_pure.round(4))
+
+print("\n[Engineered Model] Feature importances:")
+imp_eng = pd.Series(rf_eng_model.feature_importances_, index=rf_feats_eng).sort_values(ascending=False)
+print(imp_eng.round(4))
 
 import numpy as np
 import pandas as pd
